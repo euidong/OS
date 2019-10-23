@@ -3,6 +3,7 @@
 - SW가 컴퓨터 시스템에서 수행되기 위해서는 메모리에 적재되어야 한다. <br>
 이때 제일 먼제 적재되는 것이 OS 중 booting을 담당하는 부분이다. <br>
 - OS는 HW 버로 윗단에 존재하는 SW이다.
+- OS의 주된 업무는 resource management and control이다.
 
 ### Kernel
 - kernel은 알맹이라는 뜻이다.
@@ -49,7 +50,18 @@
  - 저장되어야 할 데이터를 file 형태로 저장한다.
  - 메모리의 자원을 효율적이고 공평하게 할당/회수한다. (Scheduling)
  - 주변 장치들은 CPU나 메모리와는 달리 Interrupt라는 매커니즘을 통해 관리한다.<br>
- Interrup : CPU의 서비스가 필요한 경우 신호를 CPU에게 보내서 이를 처리할 수 있도록 한다. <br>
- 이러한 Interrupt는 CPU에서 매 instruction마다 check하고 있다가 이를 감지하면, <br>
- 지정되어 있는 interrupt service routine에 따라 작업을 처리한다. <br>
- 
+
+
+
+#### Interrup
+- CPU의 서비스가 필요한 경우 신호를 CPU에게 보내서 이를 처리할 수 있도록 한다.
+- 이러한 Interrupt는 CPU에서 매 instruction마다 check하고 있다가 이를 감지하면, <br>
+지정되어 있는 interrupt service routine에 따라 작업을 처리한다.
+- 모든 interrupt에 대한 처리 방식은 이미 interrupt service routine에 저장되어 있다.
+- 이 interrupt처리 방식을 가르키기 위해서 vector table이 존재한다.
+
+1.  따라서, interrupt가 발생하면,
+2.  현재 상태를 저장하고,
+3. vector table에서 service routine의 위치를 찾고,
+4. interrupt service routine에 따라 행동을 수행하고,
+5. interrupt가 발생했던 지점으로 돌아간다.

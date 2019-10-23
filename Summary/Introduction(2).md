@@ -1,0 +1,61 @@
+# Base
+
+### Program
+- program은 기계어형태로 이루어진 하나의 code 덩어리다.
+- 사람이 작성한 코드를 하나의 기계어 덩어리로 만드는 과정을 build라고 한다.
+- 이 code 덩어리를 실행하는 것은 load라고 한다.
+
+#### Build
+- Build는 2개의 형태로 나누어진다.
+
+##### 1) Compile
+  - 사람이 작성한 코드를 기계어 형태로 만들어야 한다.
+  - 이를 만드는 절차를 compile이라고 한다.
+  - compile 자체로 기계어를 만들기도 하고,<br>
+   assembler로 변환하고 이를 기계어로 변환시키는 단계를 거치기도 한다.
+  - 이럴 경우 compile 절차는 compile + assembling으로 나뉜다.
+
+##### 2) Link
+ - 기계어로 바뀐 코드들을 하나의 덩어리로 뭉치는 과정이다.
+ - 이 과정에서 library or 다른 code를 묶어서 하나의 실행파일을 만든다.
+
+### Process
+- process = program in execution
+- 즉, 실행 가능한 프로그램을 말한다.(loaded program)
+- 이 뜻은 program을 실행시키기 위한 resource를 포함한 상태를 말한다.
+- 이때 이러한 자원의 예로는 PC 값, Stack, 등이 있다.
+
+### Dual Mode Operation
+OS는 공유 환경 (여러 명의 User, 여러 개의 process가 자원을 나눠 쓰는 환경)에서, <br>
+잘못된 하나의 program이 다른 program에 영향을 주지 않게 하기 위해 mode를 두개로 나누었다.
+- User mode : User가 만들고 마음대로 실행되어도 되는 mode.
+- Monitor(Kernel) mode : 반드시 보호되어야 하는 mode.
+- 1bit를 통해 상태를 check한다.(User = 1 , Monitor = 0)
+
+### System call
+- hardware가 아닌 software가 interrupt를 일으키는 방식이다.
+- 이를 trap이라고도 한다.
+- 이때, user mode에서 kernel mode로 변경되며,<br>
+여태까지의 동작을 save하고, vector table에서 해당 interrupt를 확인하고, <br>
+그에 알맞는 동작을 수행한다.
+
+### Memory & Storage
+- Computer Architecture는 매우 계층적으로 설계되어 있다.
+- 계층의 위로 올라갈 수록 저장 공간은 줄고, 처리 속도는 빨라진다.
+- 이렇게 설계함으로서 CPU 근처에서는 처리 속도를 최대화하고, Storage에서는 저장 용량을 최대화한다.
+
+### Device controller
+- CPU를 제외한 모든 Device는 controller에 의해서 1단계로 처리를 수행한다. <br>
+(CPU는 OS가 수행한다.)
+- 또한, 각 Device는 임시적으로 데이터를 저장할 수 있는 Buffer(queue)를 갖고 있다.
+- Device에서 Interrupt가 오면, CPU는 Memory에서 각 각의 local buffer에 전송한다. <br>
+이는 \*DMA절차에 따라 수행된다.
+- 이를 Device에게 전송하는 단계가 끝나면, <br>
+device controller는 CPU에게 interrupt를 통해 이를 알린다.
+
+#### DMA(Direct Memory Access (Controller))
+CPU가 block 인식을 하면, DMA가 block 내의 buffer 이동을 제어해서 CPU의 접근을 줄인다.
+- Memory의 접근 속도에 유사하게 데이터를 Device에 전달하기 위해 사용된다.
+- Device controller는 CPU의 접근없이 <br>
+ Main memory에서 local buffer로 block단위로 데이터를 전송한다.
+- 즉, block하나에 요청과 수신완료 interrupt가 발생한다.
