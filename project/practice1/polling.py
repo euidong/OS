@@ -73,32 +73,20 @@ def polling(tasks, poll, aperiodic_num):
         aperiodic_tasks = make_aperiodic_tasks(aperiodic_num, hyperPeriod)
         schedule = [0 for i in range(hyperPeriod + 1)]
 
-        # for i in range(0,hyperPeriod, poll.t):
-        #     if aperiodic_count < aperiodic_num:
-        #         if aperiodic_tasks[aperiodic_count].arrival < i:
-        #             poll_buffer+= aperiodic_tasks[aperiodic_count]
-        #             aperiodic_count+=1
-        #     while poll_buffer > 0:
-        #         if poll.c - put_count > 0:
-        #             schedule[i + put_count] = "AP"
-        #             put_count += 1
-        #         else:
-        #             put_count = 0
-        #             break
+        # poll에 의한 scheduling 실시
+        while current < hyper_period:
+            while current >= aperiodic_tasks[aperiodic_count].arrival and aperiodic_count < aperiodic_num:
+                poll_buffer += aperiodic_tasks[aperiodic_count].c
+                aperiodic_count += 1
+            while put_count < poll.c and poll_buffer > 0:
+                schedule[current + put_count] = "AP"
+                put_count += 1
+            put_count = 0
+            current += poll.t
+        current = 0
 
-        if task.is_poll == True:
-                while current < hyper_period:
-                    while current >= aperiodic_tasks[aperiodic_count].arrival and aperiodic_count < aperiodic_num:
-                        poll_buffer += aperiodic_tasks[aperiodic_count].c
-                        aperiodic_count += 1
-
-                    while put_count < task.c and poll_buffer > 0:
-                        schedule[current + put_count] = task.name
-                        put_count += 1
-                    put_count = 0
-                    current += task.t
         tasks = sorted(tasks, key=lambda task: task.t)
-
+        # task의 scheduling 실시.
         for task in tasks:
             while current < hyper_period: 
                 while put_count < task.c:
@@ -108,10 +96,6 @@ def polling(tasks, poll, aperiodic_num):
                 current += task.t
             current = 0
                     
-
-
-
-
 
     # scheduling이 불가능한 경우
     else :

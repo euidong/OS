@@ -1,0 +1,19 @@
+average waiting time
+0) task buffer 생성
+
+1) ap체크
+모든 ap에게 arrival이 current보다 작은데 c가 남았다면,
+waiting += 1
+
+2) tasks 체크
+모든 tasks에게 현재 주기가 reset되어 task.c를 reset해야 하나?
+
+3) polling 주기인가?
+	<yes>
+	polling buffer에 데이터가 있는가?
+	schedule에 "AP" 할당
+
+
+4) tasks[i]의 주기인가? 
+- 주기가 빠른 순서로 검색하다가 task.c가 0이 아닌 수 찾기
+- schedule에 "task" +str(i) 할당
