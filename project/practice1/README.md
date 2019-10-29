@@ -19,6 +19,6 @@ Implementation Scheduling algorithm
 
 ### First, Implementation Polling Service
 
-[polly.py](./polly.py)
+[polly.py](./polling.py)
 ### Second, Implementation Deferrable Service
 [deferrable.py](./deferrable.py)
