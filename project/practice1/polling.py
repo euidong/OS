@@ -3,7 +3,6 @@ import numpy as np
 import plotly.figure_factory as ff
 import datetime
 
-
 class task :
     def __init__(self,c,t,arrival,is_poll,name):
         self.c = c
@@ -46,7 +45,7 @@ def make_gantt_chart(schedule):
     for job in schedule:
         tomorrow = (now + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         if job != "":
-            df.append(dict(Task="job",Start=nowDate,Finish=tomorrow,Resource=job))
+            df.append(dict(Task=job,Start=nowDate,Finish=tomorrow,Resource=job))
         now = now + datetime.timedelta(days=1)
         nowDate = tomorrow
 
@@ -132,8 +131,18 @@ def polling(tasks, poll, aperiodic_num):
         return -1
     
 
+f = open("task_input.txt",'r',encoding="utf-8")
+tasks = []
+
+lines = f.readlines()
+for line in lines:
+    split = line.strip().split(' ')
+    tasks.append(task(int(split[0]), int(split[1]), 0, False, split[2]))
+
+f.close()
+
 # task(execution time, cycle time, arrival time, is_poll)
-tasks = [task(4,20,0,False,"a"), task(2,10,0,False, "b"), task(5,25,0,False, "c")]
+# tasks = [task(4,20,0,False,"a"), task(2,10,0,False, "b"), task(5,25,0,False, "c")]
 poll = task(1,10,0,True,"poll")
 
 # tasks, poll, aperiodicTask_num

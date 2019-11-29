@@ -2,20 +2,20 @@
 Implementation Scheduling algorithm
 
 #### input :
-    1. Periodic task 
+    1. Periodic task
         1) task's number : 3 ~ 100
-        2) all task's hyper period : 100
-        3) Computation Time : free
+        2) Computation Time : free
+        3) you can put data by reading file or creating random number.
     2. Aperiodic task
-        1) task's number : 100
+        1) task's number : 3~100
 
 #### output :
-    1. average waiting time of Aperiodic task.
-    2. full gannt chart.
+    1. average waiting time of Aperiodic task.(essencial)
+    2. full gannt chart.(additional)
 
 #### condition :
     1. Aperiodic task's arrival time is random.
-
+    2. util < n(2^(1/n) - 1)
 
 ### First, Implementation Polling Service
 

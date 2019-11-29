@@ -147,8 +147,18 @@ def defering(tasks, deferer, aperiodic_num):
         return -1
     
 
+f = open("task_input.txt","r")
+tasks = []
+
+lines = f.readlines()
+for line in lines:
+    split = line.strip().split(' ')
+    tasks.append(task(int(split[0]), int(split[1]), 0, False, split[2]))
+
+f.close()
+
 # task(execution time, cycle time, arrival time, is_poll)
-tasks = [task(4,20,0,False,"a"), task(2,10,0,False, "b"), task(5,25,0,False, "c")]
+# tasks = [task(4,20,0,False,"a"), task(2,10,0,False, "b"), task(5,25,0,False, "c")]
 deferer = defer(1,10)
 
 # tasks, poll, aperiodicTask_num
