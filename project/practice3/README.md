@@ -1,4 +1,4 @@
-# Implementation Contiguius Allocation
+# Implementation Contiguous Allocation
 
 ### requirement
 - Allocation
