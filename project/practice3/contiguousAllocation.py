@@ -5,7 +5,7 @@ import copy
 import datetime
 import plotly.graph_objects as go
 
-f = open("basic_input.txt", "r", encoding="utf-8")
+f = open("compaction_input.txt", "r", encoding="utf-8")
 lines = f.readlines()
 
 memory = []
