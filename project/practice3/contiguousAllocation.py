@@ -94,7 +94,6 @@ def getTotalBlock(allocatedBlock, freeBlock):
 def showGraph(totalBlocks):
     x = []
     colors= {}
-    
     for i in range(len(totalBlocks)):
         x.append("REQUEST" +str(i+1))
     yBatch = []
