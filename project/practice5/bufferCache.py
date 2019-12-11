@@ -47,7 +47,6 @@ def makeDelay(freeHeader):
     size = freeHeader.getSize()
     if size != 0:
         randFree = random.randrange(0,size)
-
         block = freeHeader.next
         for i in range(randFree):
             block = block.next     
@@ -55,68 +54,68 @@ def makeDelay(freeHeader):
         if block.state == 'Free':
             block.state = 'Delay'
 
-def makeBusy(hashQueue, busyList):
-    randHash = random.randrange(0, len(hashQueue))
-    if hashQueue[randHash]:
-        randData = random.randrange(0, len(hashQueue[randHash]))
-        if hashQueue[randHash][randData][1] == 'Free':
-            hashQueue[randHash][randData][1] = 'Busy'
-            busyList.append([hashQueue[randHash][randData][0] , random.randrange(1,10)])
+def makeBusy(hashQueue, FreeHeader, busyList):
+    size = FreeHeader.getSize()
+    if size > 0:
+        randNum =random.randrange(0, size)
+        target = FreeHeader.next
+        for i in range(randNum):
+            target = target.next
+        target.back.next = target.next
+        target.next.back = target.back
+        hashIndex = target.data % len(hashQueue)
+        busyList.append([target.data, random.randrange(1, 10)])
+        for i in range(len(hashQueue[hashIndex])):
+            if hashQueue[hashIndex][i][0] == target.data:
+                hashQueue[hashIndex][i][1] = 'Busy'
+        
+    
 
-def notBusy(hashQueue, busyList):
-    delete = True
-    while delete:
-        delete =False
+def makeFree(hashQueue, FreeHeader, busyList):
+    allDeleted = False
+    while not allDeleted:
         for busyBlock in busyList:
-            if busyBlock[1] == 0:
+            if busyBlock[1] <= 0:
                 hashIndex = busyBlock[0] % len(hashQueue)
-                for block in hashQueue[hashIndex]:
-                    if block[0] == busyBlock[0]:
-                        block[1] = 'Busy'
+                for i in range(len(hashQueue[hashIndex])):
+                    if hashQueue[hashIndex][i][0] == busyBlock[0]:
+                        hashQueue[hashIndex][i][1] = 'Free'
                         busyList.remove(busyBlock)
-                        delete = True
+                        if freeHeader.back != None:
+                            newFree = freeBlock(freeHeader, freeHeader.back, hashQueue[hashIndex][i][0], 'Free')
+                            freeHeader.back.next = newFree
+                            freeHeader.back = newFree
+                        else:
+                            newFree = freeBlock(freeHeader, freeHeader, hashQueue[hashIndex][i][0], 'Free')
+                            freeHeader.next = newFree
+                            freeHeader.back = newFree
                         break
-
-def ReleaseBlock(hashQueue, freeHeader):
-    randHash = random.randrange(0, len(hashQueue))
-    if hashQueue[randHash]:
-        randData = random.randrange(0, len(hashQueue[randHash]))
-        state = hashQueue[randHash][randData][1]
-        if state == 'Busy':
-            hashQueue[randHash][randData][1] = 'Free'
-            block = hashQueue[randHash][randData][0]
-            for busy in busyList:
-                if busy[0] == block:
-                   busyList.remove(busy)
-                   break  
-            if freeHeader.back != None:
-                newFree = freeBlock(freeHeader, freeHeader.back, block, 'Free')
-                freeHeader.back.next = newFree
-                freeHeader.back = newFree
-            else:
-                newFree = freeBlock(freeHeader, freeHeader, block, 'Free')
-                freeHeader.next = newFree
-                freeHeader.back = newFree
-           
+        allDeleted = True
+        for busyBlock in busyList:
+            if busyBlock[1] <= 0:
+                allDeleted = False     
 
 def getBlock(requestBlock, hashQueue, freeHeader, busyList):
     hashIndex = requestBlock % len(hashQueue)
     isExist = False
-    for block in hashQueue[hashIndex]:
-        if block[0] == requestBlock:
+    for i in range(len(hashQueue[hashIndex])):
+        if hashQueue[hashIndex][i][0] == requestBlock:
             isExist = True
-            if block[1] == 'Busy':
-                print("Senario 5 : request block(" +str(requestBlock) + ") is busy")
+            if hashQueue[hashIndex][i][1] == 'Busy':
+                print("Senario 5 : request block(" +str(requestBlock) + ") is Busy", end=' ')
+                for busyBlock in busyList:
+                    if busyBlock[0] == requestBlock:
+                        print("wait " + str(busyBlock[1]) +"s")
                 return 'Senario_5'
             else:
                 free = freeHeader.next
-                while free.data != block[0]:
+                while free.data != hashQueue[hashIndex][i][0]:
                     free = free.next
                 free.back.next = free.next
                 free.next.back = free.back
-                block[1] = 'Busy'
-                busyList.append([block[0], random.randrange(1,10)])
-                print("Senario 1 : make free block(" +str(requestBlock) + ") to not free") 
+                hashQueue[hashIndex][i][1] = 'Busy'
+                busyList.append([requestBlock, random.randrange(1,10)])
+                print("Senario 1 : make Free block(" +str(requestBlock) + ") Busy") 
                 return 'Senario_1'
     if not isExist:
         if freeHeader.next == freeHeader:
@@ -130,37 +129,22 @@ def getBlock(requestBlock, hashQueue, freeHeader, busyList):
             hashIndex = free.data % len(hashQueue)
             
             if free.state == 'Delay':
-                for hBlock in hashQueue[hashIndex]:
-                    if hBlock[0] == free.data:
-                        hBlock[1] = 'Busy'
+                for i in range(len(hashQueue[hashIndex])):
+                    if hashQueue[hashIndex][i][0] == free.data:
+                        hashQueue[hashIndex][i][1] = 'Busy'
+                        busyList.append([free.data, random.randrange(1, 10)])
                 print("Senario 3 : delay data(" +str(requestBlock) + ") writing")            
                 return 'Senario_3'
             else :
                 hashQueue[hashIndex].remove([free.data, 'Free'])
                 hashIndex = requestBlock % len(hashQueue)
                 hashQueue[hashIndex].append([requestBlock, 'Busy'])
+                busyList.append([requestBlock, random.randrange(1, 10)])
                 print("Senario 2 : allocate new block(" +str(requestBlock) + ")")
                 return 'Senario_2'
 
 busyList = []
 hashQueue, freeHeader = setInit(10, 30, busyList)
-
-
-while(freeHeader.next.data != "header"):
-    freeHeader = freeHeader.next
-    print(str(freeHeader.data) + ' ' +freeHeader.state)
-freeHeader = freeHeader.next
-
-ReleaseBlock(hashQueue, freeHeader)
-print(hashQueue)
-print(busyList)
-print()
-
-
-while(freeHeader.next.data != "header"):
-    freeHeader = freeHeader.next
-    print(str(freeHeader.data)+ ' ' +freeHeader.state)
-freeHeader = freeHeader.next
 
 senarioList = [False] * 5
 
@@ -169,18 +153,35 @@ Execute = True
 
 counter = 0
 while not complete:
+    freeSize = freeHeader.getSize()
+    if senarioList[0] and senarioList[1] and senarioList[2] and senarioList[4] and Execute:
+        print("\nTo show senario 4 I make " + str(freeSize) +" buffer busy")
+        for i in range(freeSize):
+            makeBusy(hashQueue, freeHeader, busyList)
+
+    hashValue = len(hashQueue)
+    print("Hash Queue state-----------------")
+    for i in range(hashValue):
+        print("x mod " + str(hashValue) + "= " + str(i), end='')
+        print(hashQueue[i])
+    freeSize = freeHeader.getSize()
+    print("\nFree List state------------------",end='\n-')
+    if freeSize == 0:
+        print("Empty")
+
+    while(freeHeader.next.data != "header"):
+        freeHeader = freeHeader.next
+        print('['+str(freeHeader.data)+ ' ' +freeHeader.state,end=']-')
+    freeHeader = freeHeader.next
+    print()
     counter +=1
-    if counter == 5:
-        counter = 0
-        makeBusy(hashQueue,busyList)
-        makeBusy(hashQueue,busyList)
-        makeDelay(freeHeader)
-    for busy in busyList:
-        busy[1] -= 1
-    notBusy(hashQueue, busyList)
+
+
     complete = True
     if Execute:
         rand = random.randint(0, 100) 
+    
+    print("\nDo allocate " + str(rand) + "-------------------")
     result = getBlock(rand, hashQueue, freeHeader, busyList) 
     
     if result == 'Senario_1':
@@ -190,10 +191,6 @@ while not complete:
     if result == 'Senario_2':
         senarioList[1] = True
         Execute = True
-        while(freeHeader.next.data != "header"):
-            freeHeader = freeHeader.next
-            print(str(freeHeader.data)+ ' ' +freeHeader.state)
-        freeHeader = freeHeader.next
         
     if result == 'Senario_3':
         senarioList[2] = True
@@ -202,24 +199,23 @@ while not complete:
     if result == 'Senario_4':
         senarioList[3] = True
         Execute = False
-        ReleaseBlock(hashQueue, freeHeader)
-        
         
     if result == 'Senario_5':
         senarioList[4] = True
-        Execute = False
-    
-    if result == 'Senario_0':
-        Execute = True
-    
+        Execute = False       
+
     for senario in senarioList:
         if not senario:
             complete = False
             break
-    if senarioList[0] == False:
-        ReleaseBlock(hashQueue, freeHeader)
-        ReleaseBlock(hashQueue, freeHeader)
+    if counter % 5 == 0:
+        makeBusy(hashQueue, freeHeader, busyList)
+        makeDelay(freeHeader)
+    for busy in busyList:
+        busy[1] -= 1
     
-
-    print(hashQueue)
+    makeFree(hashQueue, freeHeader, busyList)
+    makeBusy(hashQueue, freeHeader, busyList)
+    print("\n")
     time.sleep(1)
+print("총 할당 횟수 :" + str(counter))

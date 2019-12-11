@@ -1,4 +1,4 @@
-# LRU Algorithm
+# Frame allocation Algorithm
 
 ### Input
 - frame's number : 10 ~ 200
@@ -9,4 +9,4 @@
 - generate reference string by random 
 
 ### Output
-- Scheduling View
+- FIFO, LRU, optimal's Scheduling View
